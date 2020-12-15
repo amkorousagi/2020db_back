@@ -26,7 +26,7 @@ class Rate_commit{
         result = await connection.execute(sql, binds, options);
         console.log(result.rows[0]);
 
-        var video_id = result.rows[0]["video_id"]; //how?? video id
+        var video_id = result.rows[0]["VIDEO_ID"]; //how?? video id
 
 
         sql = `insert into rating(description, score, rating_id) values ('${dict.desc}', :score, :rating_id)`;
