@@ -72,6 +72,37 @@ oracledb.autoCommit = true;
 
     console.log("Number of rows inserted:", result.rowsAffected);
 */
+async function intervalFunc() {
+  try {
+    let sql, binds, options, result, connection, result2;
+
+    connection = await oracledb.getConnection(dbConfig);
+
+    sql =`select rate.video_id, avg(score) as avg_score from rate, rating where rate.rating_id = rating.rating_id  group by video_id`;
+
+    binds = [];
+
+    options = {
+      outFormat: oracledb.OUT_FORMAT_OBJECT,
+    };
+
+    result = await connection.execute(sql, binds, options);
+    for(i=0; i<result.rows.length; i++){
+      sql =
+      `update video
+      set mean_rating = ${result.rows[i].AVG_SCORE}
+      where video_id = ${result.rows[i].VIDEO_ID}
+      `;
+      result2 = await connection.execute(sql, binds, options);
+    }
+
+  } catch(err) {
+    console.log(err.toString())
+  }
+}
+
+setInterval(intervalFunc, 60000);
+
 app.get("/", async (req,res)=>{
   let sql, binds, options, result, connection;
 
