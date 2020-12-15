@@ -13,9 +13,9 @@ class Account_update{
           };
 
           sql =`update v_account
-          set account_pw=:account_pw, account_name=:account_name, phone=:phone, sex=:sex, birth_date=:birth_date, address=:address, job=:job, permission=:permission
-          where account_id=:account_id`;
-          binds = [dict.account_pw, dict.account_name, dict.phone, dict.sex, dict.birth_date,dict.address,dict.job,dict.permission,dict.account_id];
+          set account_pw='${dict.account_pw}', account_name='${dict.account_name}', phone=${dict.phone}, sex='${dict.sex}', birth_date='${dict.birth_date}', address='${dict.address}', job='${dict.job}', permission='${dict.permission}'
+          where account_id=${dict.account_id}`;
+          binds = [];
           result = await connection.execute(sql, binds, options);
 
           res.json([dict.account_id, result.rows]);

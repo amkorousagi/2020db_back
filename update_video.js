@@ -36,23 +36,23 @@ class Update_video{
 
             sql = `
               update movie
-              set description = :description
+              set description =' ${description}'
               where movie_id = :movie_id
             `;
-            binds = [description, movie_id];
+            binds = [movie_id];
             result = await connection.execute(sql, binds, options);
             console.log(result);
 
             sql = `
               update video
-              set video_name = :video_name,
+              set video_name = '${video_name}',
               video_type = :video_type,
               published_date = :published_date,
               uploaded_date = :uploaded_date,
               runtime = :runtime
               where video_id = :video_id
             `;
-            binds = [video_name, video_type, published_date, uploaded_date, runtime, video_id];
+            binds = [video_type, published_date, uploaded_date, runtime, video_id];
             result = await connection.execute(sql, binds, options);
             console.log(result);
           }else if(dict.type == "episode"){
@@ -71,25 +71,25 @@ class Update_video{
 
             sql = `
               update episode
-              set description = :description,
+              set description = '${description}',
               season = :season,
               round = :round
               where episode_id = :episode_id
             `;
-            binds = [description, season, round, episode_id];
+            binds = [season, round, episode_id];
             result = await connection.execute(sql, binds, options);
             console.log(result);
 
             sql = `
               update video
-              set video_name = :video_name,
+              set video_name ='${video_name}',
               video_type = :video_type,
               published_date = :published_date,
               uploaded_date = :uploaded_date,
               runtime = :runtime
               where video_id = :video_id
             `;
-            binds = [video_name, video_type, published_date, uploaded_date, runtime, video_id];
+            binds = [video_type, published_date, uploaded_date, runtime, video_id];
             result = await connection.execute(sql, binds, options);
             console.log(result);
           }else if(dict.type == "knu_original"){
@@ -106,23 +106,23 @@ class Update_video{
 
             sql = `
               update knu_original
-              set description = :description
+              set description = '${description}'
               where knu_original_id = :knu_original_id
             `;
-            binds = [description, knu_original_id];
+            binds = [knu_original_id];
             result = await connection.execute(sql, binds, options);
             console.log(result);
 
             sql = `
               update video
-              set video_name = :video_name,
+              set video_name = '${video_name}',
               video_type = :video_type,
               published_date = :published_date,
               uploaded_date = :uploaded_date,
               runtime = :runtime
               where video_id = :video_id
             `;
-            binds = [video_name, video_type, published_date, uploaded_date, runtime, video_id];
+            binds = [video_type, published_date, uploaded_date, runtime, video_id];
             result = await connection.execute(sql, binds, options);
             console.log(result);
           }else{

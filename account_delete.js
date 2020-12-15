@@ -14,7 +14,10 @@ class Account_delete{
           sql =`delete from v_account where account_id=:account_id and account_pw=:account_pw`;
           binds = [dict.account_id,dict.account_pw];
           result = await connection.execute(sql, binds, options);
-          
+          sql = `insert into v_account(account_id) values (:account_id)`;
+          binds = [dict.account_id]
+          result = await connection.execute(sql, binds, options);
+
           res.json(result.rows);
 
         } catch(err) {

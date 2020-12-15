@@ -13,10 +13,10 @@ class Login{
           };
 
           sql =`select account_id from v_account
-          where account_name=:account_name and
-          account_pw=:account_pw
+          where account_name='${dict.account_name}' and
+          account_pw='${ dict.account_pw}'
           `;
-          binds = [dict.account_name, dict.account_pw];
+          binds = [];
           result = await connection.execute(sql, binds, options);
 
           res.json(result.rows[0]["ACCOUNT_ID"]);

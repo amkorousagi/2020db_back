@@ -15,10 +15,10 @@ class Join{
           binds = [];
           result = await connection.execute(sql, binds, options);
           const account_id_next = result.rows[0]["ID"] + 1;
-
+          console.log(account_id_next);
           sql =`insert into v_account(account_id, account_pw, account_name, phone, sex,birth_date,address,job,permission)
-          values (:account_id, :account_pw,  :account_name, :phone, :sex, :birth_date, :address, :job, :permission)`;
-          binds = [account_id_next, dict.account_pw, dict.account_name, dict.phone, dict.sex, dict.birth_date,dict.address,dict.job,dict.permission];
+          values (:account_id, '${ dict.account_pw}', '${dict.account_name}', ${dict.phone}, '${dict.sex}', '${dict.birth_date}', '${dict.address}', '${dict.job}', '${dict.permission}')`;
+          binds = [account_id_next];
           result = await connection.execute(sql, binds, options);
 
           res.json([account_id_next, result.rows]);

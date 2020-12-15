@@ -21,16 +21,16 @@ class Rate_commit{
         var rating_id = result.rows[0]["ID"] + 1; //object type??? how?? rating count + 1
 
         console.log(dict.video_name);
-        sql = `select video_id from video where video_name = :video_name`;
-        binds = [dict.video_name];
+        sql = `select video_id from video where video_name = '${dict.video_name}'`;
+        binds = [];
         result = await connection.execute(sql, binds, options);
         console.log(result.rows[0]);
 
         var video_id = result.rows[0]["video_id"]; //how?? video id
 
 
-        sql = `insert into rating(description, score, rating_id) values (":desc", :score, :rating_id)`;
-        binds = [dict.desc, dict.score, rating_id];
+        sql = `insert into rating(description, score, rating_id) values ('${dict.desc}', :score, :rating_id)`;
+        binds = [dict.score, rating_id];
         result = await connection.execute(sql, binds, options);
         console.log(result);
 
@@ -44,12 +44,7 @@ class Rate_commit{
         result = await connection.execute(sql, binds, options);
         console.log(result);
 
-        sql = `commit`;
-        binds = [];
-        result = await connection.execute(sql, binds, options);
-        console.log(result);
-
-        res.json(result.rows);
+        res.json(result);
       } catch(err) {
         console.log(err.toString())
         res.status(404).json(err.toString())
