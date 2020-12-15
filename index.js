@@ -2,6 +2,7 @@ var express = require("express");
 const oracledb = require('oracledb');
 const dbConfig = require('./db_config.json');
 var bodyParser = require('body-parser');
+var Asynclock = require('async-lock');
 
 var test = require("./test");
 var rating = require("./rating");
@@ -103,6 +104,34 @@ async function intervalFunc() {
 
 setInterval(intervalFunc, 60000);
 
+app.get("/search_id", async (req,res)=>{
+  let sql, binds, options, result, connection;
+
+  connection = await oracledb.getConnection(dbConfig);
+
+  sql = `select * from video where video_name = '${req.query.video_name}'`;//`SELECT (1+1) AS result from employee`;
+  binds = [];
+
+  // For a complete list of options see the documentation.
+  options = {
+    //outFormat: oracledb.OUT_FORMAT_OBJECT,   // query result format
+    // extendedMetaData: true,               // get extra metadata
+    // prefetchRows:     100,                // internal buffer allocation size for tuning
+    // fetchArraySize:   100                 // internal buffer allocation size for tuning
+  };
+
+  result = await connection.execute(sql, binds, options);
+
+  console.log("Metadata: ");
+  console.dir(result.metaData, { depth: null });
+  console.log("Query results: ");
+  console.dir(result.rows, { depth: null });
+   //test_instance.execute(pool, res);
+
+   res.json(result.rows[0]);
+});
+
+
 app.get("/", async (req,res)=>{
   let sql, binds, options, result, connection;
 
@@ -143,12 +172,34 @@ app.get("/average_rating", (req, res)=>{
   average_rating_instance.execute(req.query.video_id, oracledb, dbConfig, res);
 });
 
+var lock_insert_video = new Asynclock();
+var key_insert_video = "key";
+function operation_insert_video(arg_list){
+  lock_insert_video.acquire(key_insert_video, function(){
+    setTimeout(function(){
+      insert_video_instance.execute(arg_list.req.query, oracledb, dbConfig, arg_list.res);
+    },3000)
+  }, function(err, ret){
+  }, {});
+}
+
 app.get("/insert_video", (req, res) =>{
-  insert_video_instance.execute(req.query, oracledb, dbConfig, res);
+  operation_insert_video({req:req, res:res});
+  //insert_video_instance.execute(req.query, oracledb, dbConfig, res);
 })
 
+var lock_update_video = new Asynclock();
+var key_update_video = "key";
+function operation_update_video(arg_list){
+  lock_insert_video.acquire(key_update_video, function(){
+    setTimeout(function(){
+      update_video_instance.execute(arg_list.req.query, oracledb, dbConfig, arg_list.res);
+    },3000)
+  }, function(err, ret){
+  }, {});
+}
 app.get("/update_video", (req, res) => {
-  update_video_instance.execute(req.query, oracledb, dbConfig, res);
+  operation_update_video({req:req, res:res});
 })
 
 app.get("/all_movie", (req, res) => {
@@ -167,16 +218,46 @@ app.get("/login", (req, res) => {
   login_instance.execute(req.query, oracledb, dbConfig, res);
 })
 
+var lock_join = new Asynclock();
+var key_join = "key";
+function operation_join(arg_list){
+  lock_join.acquire(key_join, function(){
+    setTimeout(function(){
+      join_instance.execute(arg_list.req.query, oracledb, dbConfig, arg_list.res);
+    },3000)
+  }, function(err, ret){
+  }, {});
+}
 app.get("/join", (req, res) => {
-  join_instance.execute(req.query, oracledb, dbConfig, res);
+  operation_join({req:req,res:res});
 })
 
+var lock_account_delete = new Asynclock();
+var key_account_delete = "key";
+function operation_account_delete(arg_list){
+  lock_account_delete.acquire(key_account_delete, function(){
+    setTimeout(function(){
+      account_delete_instance.execute(arg_list.req.query, oracledb, dbConfig, arg_list.res);
+    },3000)
+  }, function(err, ret){
+  }, {});
+}
 app.get("/account_delete", (req, res) => {
-  account_delete_instance.execute(req.query, oracledb, dbConfig, res);
+  operation_account_delete({req:req,res:res});
 })
 
+var lock_account_update = new Asynclock();
+var key_account_update = "key";
+function operation_account_update(arg_list){
+  lock_account_update.acquire(key_account_update, function(){
+    setTimeout(function(){
+      account_update_instance.execute(arg_list.req.query, oracledb, dbConfig, arg_list.res);
+    },3000)
+  }, function(err, ret){
+  }, {});
+}
 app.get("/account_update", (req, res) => {
-  account_update_instance.execute(req.query, oracledb, dbConfig, res);
+  operation_account_update({req:req,res:res});
 })
 
 app.get("/view_all_movie", (req, res) => {
@@ -199,8 +280,18 @@ app.get("/best", (req, res) => {
   best_instance.execute(req.query, oracledb, dbConfig, res);
 })
 
+var lock_rate = new Asynclock();
+var key_rate = "key";
+function operation_rate(arg_list){
+  lock_rate.acquire(key_rate, function(){
+    setTimeout(function(){
+      rate_instance.execute(arg_list.req.query, oracledb, dbConfig, arg_list.res);
+    },3000)
+  }, function(err, ret){
+  }, {});
+}
 app.get("/rate", (req, res) => {
-  rate_instance.execute(req.query, oracledb, dbConfig, res);
+  operation_rate({req:req,res:res});
 })
 
 app.listen(5000, "0.0.0.0", function(){

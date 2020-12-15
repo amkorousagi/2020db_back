@@ -18,12 +18,16 @@ class Update_video{
           if(result.rows[0]["PERMISSION"] == 'admin'){
             console.log("admin");
           }else{
-            throw new ERROR("not allowed action");
+            throw new Error("not allowed action");
           }
-
+          dict.type = dict.video_type
 
           if(dict.type == "movie"){
-            const movie_id= dict.movie_id;
+            sql =`SELECT movie_id FROM refer_movie WHERE video_id = :id`;
+            binds = [dict.video_id];
+            result = await connection.execute(sql, binds, options);
+
+            const movie_id = result.rows[0]["MOVIE_ID"];
             const video_id= dict.video_id;
 //http://localhost:5000/insert_video?type=movie&video_name=myvideo&published_date=99/12/28&uploaded_date=99/12/28&runtime=30&description=hi
 
@@ -56,7 +60,11 @@ class Update_video{
             result = await connection.execute(sql, binds, options);
             console.log(result);
           }else if(dict.type == "episode"){
-            const episode_id = dict.episode_id;
+            sql =`SELECT episode_id FROM refer_episode WHERE video_id = :id`;
+            binds = [dict.video_id];
+            result = await connection.execute(sql, binds, options);
+
+            const episode_id = result.rows[0]["EPISODE_ID"];
             const video_id = dict.video_id;
 //http://localhost:5000/insert_video?type=movie&video_name=myvideo&published_date=99/12/28&uploaded_date=99/12/28&runtime=30&description=hi
 
@@ -93,7 +101,10 @@ class Update_video{
             result = await connection.execute(sql, binds, options);
             console.log(result);
           }else if(dict.type == "knu_original"){
-            const knu_original_id = dict.knu_original_id;
+            sql =`SELECT knu_original_id FROM refer_knu_original WHERE video_id = :id`;
+            binds = [dict.video_id];
+            result = await connection.execute(sql, binds, options);
+            const knu_original_id = result.rows[0]["KNU_ORIGINAL_ID"];
             const video_id= dict.video_id;
 //http://localhost:5000/insert_video?type=movie&video_name=myvideo&published_date=99/12/28&uploaded_date=99/12/28&runtime=30&description=hi
 
@@ -126,9 +137,9 @@ class Update_video{
             result = await connection.execute(sql, binds, options);
             console.log(result);
           }else{
-            throw new ERROR("such type not exist, " + dict.type);
+            throw new Error("such type not exist, " + dict.type);
           }
-          res.status(400).json(result);
+          res.json(result);
 
         } catch(err) {
           console.log(err.toString())
